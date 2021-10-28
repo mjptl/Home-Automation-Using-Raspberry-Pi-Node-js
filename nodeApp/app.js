@@ -2,13 +2,17 @@ var htttp = require("http");
 var fs = require("fs")
 var express = require("express");
 var bodyParser = require("body-parser");
-var cfenv = require('cfenv');
+//var cfenv = require('cfenv');
 
-var appEnv = cfenv.getAppEnv();
+//var appEnv = cfenv.getAppEnv();
 var urlencodedParser = bodyParser.urlencoded({extended:false});
 var app = express();
 
 app.use(express.static(__dirname + '/public'));
+app.set("view engine","hbs");
+
+var index = 0;
+var data2 = [{id:"007",time:"D Time 13:45",location:"Main Gate 1"}];
 var data = {'AC':"off",
             'AC_A':"51",
 
@@ -68,6 +72,28 @@ app.post('/Other',urlencodedParser,function(req,res){
   res.redirect('/');
 });
 
+app.post('/form1',urlencodedParser,function(req,res){ 
+    let Time = req.body.Time;
+    let Location = req.body.Location;
+    console.log(Time,Location);
+    index += 1;
+    data2.push({'id':index,'time':Time,'location':Location});
+    res.end("OK");
+});
+
+app.get('/form1',function(req,res){
+    res.render('form1');
+});
+
+app.get('/table',function(req,res){
+    res.render('table',{rows:data2});
+});
+
+app.get('/img',function(req,res){
+  id = req.query.id;
+  res.end(id);
+});
+
 app.get('/',function(req,res){
     fs.readFile('index.html', function(err, data) {
       res.writeHead(200, {'Content-Type': 'text/html'});
@@ -85,7 +111,8 @@ app.get('/data',function(req,res){
   console.log(JSON.stringify(data));
 });
 */
-app.listen(appEnv.port, '0.0.0.0', function() {
-  console.log("server starting on " + appEnv.url);
+app.listen(3100, '127.0.0.1', function(){
+//app.listen(appEnv.port, '0.0.0.0', function() {
+  console.log("server starting on 3000");
 });
 
